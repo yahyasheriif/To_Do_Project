@@ -1,6 +1,110 @@
-<a href="{% url 'tasks' %}">Go Back</a>
-<form method="post">
-    {% csrf_token %}
-    <h1>Are you sure you want to delete this task? "{{task}}"</h1>
-    <input type="submit" value="Delete">
-</form>
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Task - Todo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        .delete-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: subtle-float 6s ease-in-out infinite;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #ff4757;
+            font-size: 1.8em;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #7ed0d0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #68b8b8;
+            transform: translateX(-5px);
+        }
+
+        input[type="submit"] {
+            background: #ff4757;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            transition: all 0.25s ease;
+            margin-top: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background: #e8414e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        @keyframes subtle-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="delete-wrapper">
+        <a href="{% url 'tasks' %}" class="back-link">← Go Back</a>
+        <form method="post">
+            {% csrf_token %}
+            <h1>Are you sure you want to delete this task?<br>"{{task}}"</h1>
+            <input type="submit" value="Delete">
+        </form>
+    </div>
+
+    <script>
+        // Matching background animation
+        document.body.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.body.style.background = `
+                linear-gradient(
+                    135deg, 
+                    hsl(${350 + x * 20}, 40%, ${12 + y * 6}%) 0%, 
+                    hsl(${345 + y * 20}, 40%, ${10 + x * 6}%) 100%
+                )
+            `;
+        });
+    </script>
+</body>
+</html>

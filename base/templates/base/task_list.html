@@ -1,46 +1,238 @@
-{% if request.user.is_authenticated %}
-    {{ request.user.username }} is logged in.
-    <br>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-{% else %}
-    <a href="{% url 'login' %}">Login</a>
-{% endif %}
-<hr>
-<h1>My To Do List </h1>
-<h2><a href="{% url 'task-create'%}">Add Task</a></h2>
-<form method="get">
-    <input type="text" name="search-area" placeholder="Search tasks" value="{{ search_input }}">
-    <input type="submit" value="Search">
-    <br>
-</form>
-{% if tasks %}
-<table border="1">
-    <tr>
-        <th>Tasks</th>
-        <th></th>
-        <th></th>
-        <th></th>
-    </tr>
-    {%for task in tasks%}
-    <tr>
-        <td>
-            {{task.title}}
-        </td>
-        <td>
-            <a href="{% url 'task' task.id%}">View</a>
-        </td>
-        <td>
-            <a href="{% url 'task-update' task.id%}">Edit</a>
-        </td>
-        <td>
-            <a href="{% url 'task-delete' task.id%}">Delete</a>
-        </td>
-    </tr>
-        {%endfor%}
-</table>
-{% else %}
-    <p>No tasks available.</p>
-{% endif %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 2rem;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .auth-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .auth-text {
+            color: #7ed0d0;
+        }
+
+        .logout-btn {
+            background: #ff4757;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e8414e;
+            transform: translateY(-2px);
+        }
+
+        .login-link {
+            color: #7ed0d0;
+            text-decoration: none;
+        }
+
+        h1 {
+            color: #ff4757;
+            margin: 2rem 0;
+            font-size: 2.5em;
+        }
+
+        .add-task-btn {
+            display: inline-block;
+            background: #ff4757;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .add-task-btn:hover {
+            background: #e8414e;
+            transform: translateY(-2px);
+        }
+
+        .search-form {
+            margin: 2rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #e0e0e0;
+        }
+
+        .search-btn {
+            background: #6c63ff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #5b52ee;
+            transform: translateY(-2px);
+        }
+
+        .task-list {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-title {
+            flex: 1;
+            margin-right: 2rem;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-link {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .view-link {
+            background: #7ed0d0;
+            color: #16213e;
+        }
+
+        .edit-link {
+            background: #6c63ff;
+            color: white;
+        }
+
+        .delete-link {
+            background: #ff4757;
+            color: white;
+        }
+
+        .no-tasks {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        {% if request.user.is_authenticated %}
+            <div class="auth-section">
+                <span class="auth-text">{{ request.user.username }} is logged in</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="auth-section">
+                <a href="{% url 'login' %}" class="login-link">Login</a>
+            </div>
+        {% endif %}
+
+        <h1>My To Do List</h1>
+        
+        <a href="{% url 'task-create'%}" class="add-task-btn">Add Task</a>
+
+        <form method="get" class="search-form">
+            <input type="text" name="search-area" class="search-input" 
+                   placeholder="Search tasks" value="{{ search_input }}">
+            <input type="submit" value="Search" class="search-btn">
+        </form>
+
+        <div class="task-list">
+            {% if tasks %}
+                {% for task in tasks %}
+                    <div class="task-item">
+                        <div class="task-title {% if task.complete %}completed{% endif %}">
+                            {{ task.title }}
+                        </div>
+                        <div class="task-actions">
+                            <a href="{% url 'task' task.id%}" class="action-link view-link">View</a>
+                            <a href="{% url 'task-update' task.id%}" class="action-link edit-link">Edit</a>
+                            <a href="{% url 'task-delete' task.id%}" class="action-link delete-link">Delete</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-tasks">No tasks available. Create a new one!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Dynamic background animation
+        document.body.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.body.style.background = `
+                linear-gradient(
+                    135deg, 
+                    hsl(${350 + x * 20}, 40%, ${12 + y * 6}%) 0%, 
+                    hsl(${345 + y * 20}, 40%, ${10 + x * 6}%) 100%
+                )
+            `;
+        });
+    </script>
+</body>
+</html>

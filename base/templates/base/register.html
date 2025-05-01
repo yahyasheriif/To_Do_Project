@@ -1,8 +1,139 @@
-<h1>Register</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="register">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - Todo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-</form>
-<p>Allready have an account? <a href="{% url 'login' %}">Login</a></p>
+        body {
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        .login-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: subtle-float 6s ease-in-out infinite;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            color: #ff4757;  
+            font-size: 2em;
+            font-weight: 500;
+        }
+
+        form p {
+            margin-bottom: 1.5rem;
+        }
+
+        form p label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+
+        form p input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.25s ease;
+        }
+
+        form p input:focus {
+            outline: none;
+            border-color: #ff4757;
+            box-shadow: 0 0 12px rgba(255, 71, 87, 0.2);
+        }
+
+        input[type="submit"] {
+            background: #ff4757;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            width: 100%;
+            transition: all 0.25s ease;
+        }
+
+        input[type="submit"]:hover {
+            background: #e8414e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.8rem;
+            color: #909090;
+        }
+
+        .register-link a {
+            color: #7ed0d0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .register-link a:hover {
+            color: #68b8b8;
+            text-decoration: underline;
+        }
+
+        @keyframes subtle-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-wrapper">
+        <h1>Register</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Register">
+        </form>
+        <p class="register-link">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+
+    <script>
+        document.body.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.body.style.background = `
+                linear-gradient(
+                    135deg, 
+                    hsl(${350 + x * 20}, 40%, ${12 + y * 6}%) 0%, 
+                    hsl(${345 + y * 20}, 40%, ${10 + x * 6}%) 100%
+                )
+            `;
+        });
+    </script>
+</body>
+</html>
